@@ -43,7 +43,7 @@ class LazyMarkIn(object):
         image_len = len(image_pixel)
         # 返回图片像素、长度
         image_zero = []
-        # 获取像素最低有效位为0的多进程
+        # 获取像素最低有效位为0
         self.__get_zero(image_pixel, image_zero)
         return image_zero, image_len
 
@@ -83,7 +83,7 @@ class LazyMarkIn(object):
                         if self.r_check_list[inside_loop] == 1:
                             r[pixel_now] += 1
                     else:
-                        if order[middle_loop][inside_loop-4] == 1:
+                        if order[middle_loop][inside_loop-4] == '1':
                             r[pixel_now] += 1
                     # G点校验码嵌入
                     if self.g_check_list[inside_loop] == 1:
@@ -112,5 +112,7 @@ class LazyMarkIn(object):
 
 
 if __name__ == '__main__':
-    LazyMarkIn('D:\design\watermark\image\pyy.jpg', 'This is a test', 'test_pic', 'C:\\Users\zhangjie\Desktop').\
-        water_mark_in()
+    LM = LazyMarkIn('D:\design\watermark\image\pyy.jpg', 'This is a test', 'test_pic', 'C:\\Users\zhangjie\Desktop')
+    LM.water_mark_in()
+
+
