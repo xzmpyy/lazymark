@@ -1,9 +1,12 @@
 from PIL import Image
+import os
+from collections import Counter
 
 
 class LazyMarkOut(object):
-    def __init__(self, path):
+    def __init__(self, path, is_delete=False):
         self.path = path
+        self.is_delete = is_delete
 
     # 提取像素
     def __get_pixel(self):
@@ -43,6 +46,8 @@ class LazyMarkOut(object):
                 break
             else:
                 start += 8
+        # 存储RB值列表，列表第一位为R
+        r_b_list = []
         # 每8位提取一次
         while start < (image_len - 8):
             confirm = ''
@@ -57,13 +62,46 @@ class LazyMarkOut(object):
                     r_info += str(r[j])
                     b_info += str(b[j])
                 r_info = r_info[4:8]
-
+                # print(r_info)
+                # 第一次时直接存储
+                if not r_b_list:
+                    r_b_list.append([r_info, b_info])
+                else:
+                    add_flag = True
+                    for child_index in range(len(r_b_list)):
+                        # 该顺序位已在其中
+                        if r_b_list[child_index][0] == r_info:
+                            r_b_list[child_index].append(b_info)
+                            add_flag = False
+                            break
+                    # 该顺序为不在其中，需添加顺序位
+                    if add_flag:
+                        r_b_list.append([r_info, b_info])
             start += 8
+        # 列表顺序码转10进制再排序
+        for order_index in range(len(r_b_list)):
+            # 字符串转整型
+            r_b_list[order_index][0] = int(r_b_list[order_index][0], 2)
+        # 统计结果字典
+        count_dic = {}
+        for count in r_b_list:
+            # 取出现频率最高的值
+            max_code = Counter(count[1:]).most_common(1)[0][0]
+            count_dic[count[0]] = max_code
+        # 按顺序形成最终列表
+        deal_list = []
+        for num in range(len(count_dic)):
+            deal_list.append(count_dic[num])
+        return deal_list
 
     # 解码主函数
     def decode(self):
         r, g, b, image_len = self.__get_pixel()
-        self.__process(r, g, b, image_len)
+        deal_list = self.__process(r, g, b, image_len)
+        code_str = self.__bin_to_str(deal_list)
+        if self.is_delete:
+            os.remove(self.path)
+        return code_str
 
 
 if __name__ == '__main__':
