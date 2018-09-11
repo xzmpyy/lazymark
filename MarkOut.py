@@ -98,11 +98,15 @@ class LazyMarkOut(object):
     def decode(self):
         r, g, b, image_len = self.__get_pixel()
         deal_list = self.__process(r, g, b, image_len)
+        # 无解码内容时，返回400错误类型
+        if not deal_list:
+            return 400
         code_str = self.__bin_to_str(deal_list)
         if self.is_delete:
             os.remove(self.path)
+        # print(code_str)
         return code_str
 
 
 if __name__ == '__main__':
-    LazyMarkOut(r'C:\Users\zhangjie\Desktop\test_pic2.png').decode()
+    LazyMarkOut(r'C:\Users\zhangjie\Desktop\test_pic.png').decode()
