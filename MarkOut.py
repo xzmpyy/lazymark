@@ -82,16 +82,26 @@ class LazyMarkOut(object):
         for order_index in range(len(r_b_list)):
             # 字符串转整型
             r_b_list[order_index][0] = int(r_b_list[order_index][0], 2)
+        # 计算结果列表平均值，低于平均值的舍弃
+        average = 0
+        for list_len in r_b_list:
+            average += len(list_len)
+        average = average / len(r_b_list)
         # 统计结果字典
         count_dic = {}
         for count in r_b_list:
-            # 取出现频率最高的值
-            max_code = Counter(count[1:]).most_common(1)[0][0]
-            count_dic[count[0]] = max_code
+            if len(count) < average:
+                continue
+            else:
+                # 取出现频率最高的值
+                max_code = Counter(count[1:]).most_common(1)[0][0]
+                count_dic[count[0]] = max_code
         # 按顺序形成最终列表
         deal_list = []
+        # print(count_dic)
         for num in range(len(count_dic)):
-            deal_list.append(count_dic[num])
+            if num in count_dic:
+                deal_list.append(count_dic[num])
         return deal_list
 
     # 解码主函数
@@ -109,4 +119,4 @@ class LazyMarkOut(object):
 
 
 if __name__ == '__main__':
-    LazyMarkOut(r'C:\Users\zhangjie\Desktop\test_pic.png').decode()
+    LazyMarkOut(r'C:\Users\zhangjie\Desktop\pyy1536649939.png').decode()
